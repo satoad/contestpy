@@ -1,0 +1,29 @@
+import base64
+import struct
+
+def twos_complement(hexstr,bits):
+     value = int(hexstr,16)
+     if value & (1 << (bits-1)):
+         value -= 1 << bits
+     return value
+
+a = b'1pod3sdqp1V;v|??MM2idn8p=)rm(+um'
+
+a = base64.b85decode(a).hex()
+b = [a[i:i+2] for i in range(0, len(a), 2)]
+c = b[:b.index('00')]
+d = b[b.index('00') + 1:]
+print(*d)
+head = []
+for i in c:
+    head.append(twos_complement(i, 8))
+
+i = 0
+prev = 0
+res = 0
+while i < len(d):
+    cur = abs(head[i % len(head)])
+    f = d[prev:prev + cur]
+    s = ''
+    for j in f:
+   

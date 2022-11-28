@@ -1,25 +1,26 @@
-coords = [0, 0, 0, 0, 0, 0]
+x = [None, None]
+y = [None, None]
+z = [None, None]
+while a := input():
+    tmp_x, tmp_y, tmp_z = a.split(',')
+    tmp_x, tmp_y, tmp_z = float(tmp_x), float(tmp_y), float(tmp_z)
 
-x, y, z = input()
+    if x[0] is None or tmp_x > x[0]:
+        x[0] = tmp_x
+    elif x[1] is None or tmp_x < x[1]:
+        x[1] = tmp_x
 
-while (x != ''):
-    
-    if x > coords[0]:
-        coords[0] = x
+    if y[0] is None or tmp_y > y[0]:
+        y[0] = tmp_y
+    elif y[1] is None or tmp_y < y[1]:
+        y[1] = tmp_y
 
-    if x < coords[1]:
-        coords[1] = x
+    if z[0] is None or tmp_z > z[0]:
+        z[0] = tmp_z
+    elif z[1] is None or tmp_z < z[1]:
+        z[1] = tmp_z
 
-    if y > coords[2]:
-        coords[2] = y
-
-    if y < coords[3]:
-        coords[3] = y
-
-    if z > coords[4]:
-        coords[4] = z
-
-    if z < coords[5]:
-        coords[0] = z
-
-print((coords[0] - coords[1]) * (coords[2] - coords[3]) * (coords[4] - coords[5]))        
+if None in x or None in y or None in z:
+    print(0.0)
+else:
+    print((x[0] - x[1]) * (y[0] - y[1]) * (z[0] - z[1]))
