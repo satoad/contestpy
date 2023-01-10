@@ -1,145 +1,54 @@
+from collections import Counter
+
+
 class Spiral:
-    def __init__(self, other):
-        self.symbs = other
-        count = len(other)
+    def __init__(self, string):
+        self.counter = Counter(string)
 
-        i = 0
-        while count - i > 0:
-            count -= i
-            i += 1
+    def __str__(self):
+        x, y = 0, 0
+        left_lim = right_lim = upper_lim = lower_lim = 0
+        direction = 0
+        next_corner = 0
+        part_len = 0
+        field = {}
 
-        self.symbs += " " * (i - count - 1)
+        for chars_placed, char in enumerate(self.counter.elements()):
+            field[x, y] = char
 
-        self.turn = i
-        self.w = i
-        self.h = i
+            left_lim = min(left_lim, x)
+            right_lim = max(right_lim, x)
+            lower_lim = min(lower_lim, y)
+            upper_lim = max(upper_lim, y)
 
-        if count != 0:
-            if i % 2 == 0:
-                self.h -= 1
-            else:
-                self.w -= 1
+            if chars_placed == next_corner:
+                part_len += 1
+                next_corner += part_len
+                direction = (direction + 1) % 4
+
+            x += (0, 1, 0, -1)[direction]
+            y += (1, 0, -1, 0)[direction]
+
+        right_lim += 1
+        upper_lim += 1
+
+        return '\n'.join(''.join(field.get((x, y), ' ') for x in range(left_lim, right_lim))
+                         for y in range(lower_lim, upper_lim))
 
     def __add__(self, other):
-        tmp = self.symbs.split()
-        return Spiral(tmp[0] + other.symbs)
+        return Spiral(list(self) + list(other))
 
     def __sub__(self, other):
-        new_obj = Spiral(self.symbs)
-        for x in other.symbs:
-            new_obj.symbs.replace(x, '', 1)
-        return new_obj
+        return Spiral(self.counter - other.counter)
 
-    def __mul__(self, other):
-        return type(self)(self.symbs * other)
+    def __mul__(self, times):
+        return Spiral(times * list(self))
 
     __rmul__ = __mul__
 
     def __iter__(self):
-        for i in self.symbs:
-            yield i
+        return self.counter.elements()
 
-    def __repr__(self):
-        screen = [[" "] * self.w for i in range(self.h)]
+    def __len__(self):
+        return sum(self.counter.values())
 
-        vect = self.turn % 4
-        i = len(self.symbs) - 1
-
-        turns = self.turn
-
-        pos_h = 0
-        pos_w = 0
-
-        flag = True
-
-        if vect == 3:
-            pos_h = 0
-            pos_w = 0
-        elif vect == 2:
-            pos_h = 0
-            pos_w = self.w - 1
-        elif vect == 1:
-            pos_h = self.h - 1
-            pos_w = self.w - 1
-        elif vect == 0:
-            pos_h = self.h - 1
-            pos_w = 0
-
-        while turns > 0:
-            if vect == 3:
-                lim = self.turn
-                if not flag:
-                    pos_h += 1
-                    pos_w += 1
-                else:
-                    if self.h > self.w:
-                        lim -= 1
-                flag = False
-
-                j = self.turn - turns
-                while i >= 0 and j < lim:
-                    screen[pos_h][pos_w] = self.symbs[i]
-                    i -= 1
-                    pos_w += 1
-                    j += 1
-
-            elif vect == 2:
-                lim = self.turn
-                if not flag:
-                    pos_w -= 1
-                    pos_h += 1
-                else:
-                    if self.h < self.w:
-                        lim -= 1
-                flag = False
-                j = self.turn - turns
-
-                while i >= 0 and j < lim:
-                    p = screen[pos_h][pos_w]
-                    screen[pos_h][pos_w] = self.symbs[i]
-                    i -= 1
-                    pos_h += 1
-                    j += 1
-
-            elif vect == 1:
-                lim = self.turn
-                if not flag:
-                    pos_w -= 1
-                    pos_h -= 1
-                else:
-                    if self.h > self.w:
-                        lim -= 1
-                flag = False
-
-                j = self.turn - turns
-                while i >= 0 and j < lim:
-                    screen[pos_h][pos_w] = self.symbs[i]
-                    i -= 1
-                    pos_w -= 1
-                    j += 1
-            elif vect == 0:
-                lim = self.turn
-                if not flag:
-                    pos_w += 1
-                    pos_h -= 1
-                else:
-                    if self.h < self.w:
-                        lim -= 1
-                flag = False
-
-                j = self.turn - turns
-                while i >= 0 and j < lim:
-                    screen[pos_h][pos_w] = self.symbs[i]
-                    i -= 1
-                    pos_h -= 1
-                    j += 1
-
-            turns -= 1
-            vect = turns % 4
-
-        tmp = ''
-        for l in screen:
-            tmp += "".join(l) + '\n'
-
-        tmp = tmp[:-1]
-        return tmp
